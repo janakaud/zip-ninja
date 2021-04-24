@@ -10,11 +10,17 @@ def fetch(file, start, len, reason):
 	return requests.get(file, headers={"Range": "bytes=%d-%d" % (start, end)}).content
 
 def head(file):
-	headers = requests.head(file).headers
-	if headers["Accept-Ranges"] != "bytes":
-		sys.stderr.write("Server doesn't support ranged GETs!\nCtrl+C if you wish to stop, any other key to continue...\n")
-		raw_input()
-	return int(headers["Content-Length"])
+	res = requests.head(file)
+	if res.status_code not in [200, 206]:
+		pause('HTTP code ' + res.status_code)
+	if res.headers.get("Accept-Ranges") != "bytes":
+		pause("Server doesn't support ranged GETs!")
+	return int(res.headers.get("Content-Length"))
+
+def pause(msg):
+	io.eprint(msg)
+	io.eprint("Ctrl+C if you wish to stop, any other key to continue...")
+	raw_input()
 
 
 io.head = head
