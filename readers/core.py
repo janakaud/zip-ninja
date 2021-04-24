@@ -58,7 +58,7 @@ except:
 eprint("")
 for zi in zip.filelist:
 	if not extractee:
-		print "%19s %8d %8d %s %s" % (("%4d-%2d-%2d %2d:%2d:%2d" % zi.date_time), zi.compress_size, zi.file_size, zi.filename, zi.comment)
+		print("%19s %8d %8d %s %s" % (("%4d-%2d-%2d %2d:%2d:%2d" % zi.date_time), zi.compress_size, zi.file_size, zi.filename, zi.comment))
 
 	elif zi.filename == extractee:
 
@@ -76,7 +76,7 @@ for zi in zip.filelist:
 		eprint("")
 
 		if zi.compress_type == zipfile.ZIP_DEFLATED:
-			print zlib.decompressobj(-15).decompress(content)
+			print(zlib.decompressobj(-15).decompress(content),)
 		else:
-			print content
+			print(content,)
 		break
