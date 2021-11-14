@@ -9,7 +9,7 @@ from boto.s3.connection import OrdinaryCallingFormat
 _bucket = None
 _key = None
 
-def fetch(file, start, len, reason):
+def fetch(file, start, len, reason, headers={}):
 	global _key
 	(bucket, key) = resolve(file)
 	end = start + len - 1
@@ -18,11 +18,11 @@ def fetch(file, start, len, reason):
 	init(bucket, key)
 	return _key.get_contents_as_string(headers={"Range": "bytes=%d-%d" % (start, end)})
 
-def head(file):
+def head(file, headers={}):
 	global _key
 	(bucket, key) = resolve(file)
 	init(bucket, key)
-	return _key.size
+	return file, _key.size
 
 def resolve(file):
 	if file.find("s3://") < 0:
