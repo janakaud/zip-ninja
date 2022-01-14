@@ -1,0 +1,32 @@
+= `httpzip.py`
+
+List and extract files of zips hosted on HTTP/S URLs, without having to fully download
+
+Can be simply symlinked as an executable onto `PATH`:
+
+`ln -s $PWD/httpzip.py /usr/local/bin/`
+
+Requires Python 2.x (if you have multiple versions, edit the file header directive to point to the correct executable).
+
+Supports two modes:
+
+* list zip content
+* extract one file from zip
+
+Operation steps:
+
+. detect full zip length by making a HEAD request to the URL
+. fetch the last 22 bytes (end-of-central-directory, EOCD) record
+. fetch the zip central directory (CD) based on data from EOCD;
+CD size depends only on the number of entries (files/dirs) in the zip, and not on their overall/individual sizes,
+so it is fairly small (KB range) in most cases
+. in list mode, list CD content to stdout
+. in extract mode,
+.. find requested entry from CD
+.. fetch file header (also few bytes) based on offset recorded in CD entry
+.. fetch file content based on offset calculated using file header and CD entry
+.. decompress the file if necessary
+.. write resulting content to stdout
+
+All operational info/errors are written to stderr;
+stdout will only receive the file list or selected file's content, so the tool can be used safely in command chaining/piping.

@@ -18,6 +18,7 @@ io.eprint = eprint
 parser = argparse.ArgumentParser(description='List/extract contents of a remote zipfile without full download')
 parser.add_argument('url', metavar='<location>', type=str, help='URL pointing to the remote zipfile')
 parser.add_argument('--extract', '-x', metavar='<filepath>', type=str, help='pathname of file to be extracted')
+parser.add_argument('--extract-length', '-xl', metavar='<head-length>', type=int, help='get only this many bytes from extractee')
 parser.add_argument('--length', '-l', metavar='<content-length>', type=int, help='content-length of zipfile (if known)')
 parser.add_argument('--print-central-directory-size', '-pcds', action='store_true',
 	help='just print size of Central Directory (CD) and exit')
@@ -39,7 +40,7 @@ for h in args.headers:
 	headers[h[:colon]] = h[(colon + 1):].strip()
 
 # try to read the cached copy, fetch and cache CD + EOCD on failure
-tmpfile = "/tmp/" + file.replace("/", "_")
+tmpfile = "/tmp/" + file.replace("/", "_").replace(":", "_")
 try:
 	if args.fresh:
 		raise IOError('Fresh fetch requested')
@@ -97,11 +98,16 @@ for zi in zip.filelist:
 		# in our "mock" zipfile, `header_offset`s are negative (probably because the leading content is missing)
 		# so we have to add to it the CD start offset (`cd_start`) to get the actual offset
 
+		"""
 		file_head = io.fetch(file, cd_start + zi.header_offset + 26, 4, "%s file header" % extractee)
 		name_len = ord(file_head[0]) + (ord(file_head[1]) << 8)
 		extra_len = ord(file_head[2]) + (ord(file_head[3]) << 8)
+		"""
+		name_len = len(zi.filename)
+		extra_len = 0 if zi.file_size == 0 else 20
+		dl_len = zi.compress_size if args.extract_length is None else args.extract_length
 
-		content = io.fetch(file, cd_start + zi.header_offset + 30 + name_len + extra_len, zi.compress_size, "%s file content" % extractee)
+		content = io.fetch(file, cd_start + zi.header_offset + 30 + name_len + extra_len, dl_len, "%s file content" % extractee)
 		eprint("")
 
 		if zi.compress_type == zipfile.ZIP_DEFLATED:
