@@ -1,0 +1,37 @@
+= `intellij-lite.py`
+
+Downloads https://intellij-support.jetbrains.com/hc/en-us/community/posts/206260419-intellij-lite[a "minimal" or "lite" copy]
+of https://www.jetbrains.com/idea/[IntelliJ IDEA] CE (Community Edition)
+
+Requires Python 2.x, just like `httpzip.py`
+
+Resulting bundle is suitable for generic Java devs:
+
+* removes all non-essential plugins (Android, Kotlin etc.);
+retains Java, decompilers, basic code analysis, Git, Markdown, etc.
+* removes several `lib/` JARs that are not essential for operation
+* removes built-in Maven distro
+* runs on locally installed JRE (requires Java 11+)
+
+Fine-tuning of what is included and not, can be done using:
+
+* `data/whitelist.txt`: components/subpaths that will be downloaded (e.g. `plugins/maven/` dir)
+* `data/blacklist.txt`: components/subpaths that will be skipped (e.g. `plugins/maven/lib/maven3/`);
+takes precedence over whitelist, so can block subparts of already whitelisted paths
+
+Variables (inline/code level) for further tuning:
+
+`outdir`:
+Directory where the script will download content and assemble the final distro;
+you can delete any temporary files (`DELETE-*`) from this directory, and zip up the rest for reuse/reinstallation in future
+
+`dryrun`:
+Enabling this will produce a "dry run"; script downloads only any necessary metadata,
+and displays a summary of changes (files that will be downloaded vs reused) and associated bandwidths
+
+`local`:
+If you already have an old (previous version) IDEA CE distribution zip on local disk, point to it using this value.
+During download, the script will try to extract any unchanged files (which have same CRC checksum as the old file)
+from this local zip, instead of downloading them from scratch.
+(Based on observations across one major release (2020.1 - 2021.1), this does not provide a significant saving;
+70-80 files and < 30MB of bandwidth.)

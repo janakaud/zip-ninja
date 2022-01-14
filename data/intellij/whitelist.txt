@@ -1,0 +1,27 @@
+bin/
+lib/
+
+plugins/ByteCodeViewer/
+# plugins/indexing-shared/
+plugins/java/
+plugins/java-decompiler/
+plugins/maven/
+plugins/maven-model/
+
+# for markdown
+plugins/platform-images/
+
+plugins/properties/
+
+# for maven
+plugins/repository-search/
+
+redist/
+plugins/git4idea/
+plugins/java-ide-customization/
+plugins/junit/
+plugins/markdown/
+plugins/terminal/
+plugins/testng/
+plugins/xpath/
+plugins/yaml/

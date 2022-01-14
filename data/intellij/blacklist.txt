@@ -1,0 +1,44 @@
+lib/ant/
+lib/bouncy-castle-provider
+lib/dexlib2.jar
+
+lib/grazie-
+lib/groovy-
+lib/grpc-
+
+lib/kotlin-gradle-plugin-model-
+# lib/kotlin-reflect-
+lib/kotlin-test
+
+lib/ktor-
+lib/libstudio.proto-
+
+lib/netty-handler-proxy
+
+lib/okhttp
+
+lib/joni
+lib/proto-
+lib/rhino-
+lib/rocksdbjni-
+lib/spellchecker
+lib/sqlite-
+lib/sqlite_
+lib/tips-
+# lib/velocity
+lib/xercesImpl-
+lib/zip-signer
+
+bin/linux/
+bin/mac/
+# terminal, process termination etc (uncomment natives for your platform; here I allowed mine, ..native/win/)
+# lib/pty4j
+lib/pty4j-native/linux/
+lib/pty4j-native/darwin/
+bin/libnst64.dylib
+bin/restarter
+
+# bundled Maven
+plugins/maven/lib/maven3/
+# without this, some compilations (sun packages?) fail
+# plugins/java/lib/rt/protobuf-java-
