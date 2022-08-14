@@ -7,12 +7,34 @@ import io
 
 # parses 4 little-endian bits into their corresponding integer value
 def parse_int(bytes):
-	return ord(bytes[0]) + (ord(bytes[1]) << 8) + (ord(bytes[2]) << 16) + (ord(bytes[3]) << 24)
+	return parse_short(bytes[0:2]) + (parse_short(bytes[2:4]) << 16)
+def parse_short(bytes):
+	return ord(bytes[0:1]) + (ord(bytes[1:2]) << 8)
 
 def eprint(line):
 	sys.stderr.write(line)
 	sys.stderr.write("\n")
 io.eprint = eprint
+
+def waitkey():
+	try:
+		raw_input()
+	except NameError:
+		input()
+io.waitkey = waitkey
+
+if sys.platform.startswith('win'):
+    import os, msvcrt
+    msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+
+def dump(data):
+	if hasattr(sys.stdout, 'buffer'):
+		sys.stdout.buffer.write(data)
+	else:
+		sys.stdout.write(data)
+
+def flatname(name):
+	return name.replace('/', '_').replace(':', '_').replace('?', '_')
 
 
 parser = argparse.ArgumentParser(description='List/extract contents of a remote zipfile without full download')
@@ -40,12 +62,12 @@ for h in args.headers:
 	headers[h[:colon]] = h[(colon + 1):].strip()
 
 # try to read the cached copy, fetch and cache CD + EOCD on failure
-tmpfile = "/tmp/" + file.replace("/", "_").replace(":", "_")
+tmpfile = "/tmp/" + flatname(file)
 try:
 	if args.fresh:
 		raise IOError('Fresh fetch requested')
 
-	cache = open(tmpfile, "r")
+	cache = open(tmpfile, 'rb')
 	zip = zipfile.ZipFile(cache)
 	cache.seek(-6, 2)
 	cd_start_bytes = cache.read(4)
@@ -73,14 +95,14 @@ except (IOError, zipfile.BadZipFile):
 	cd_size = parse_int(eocd[12:16])
 
 	if args.print_central_directory_size:
-		open(tmpfile + "_eocd", "w").write(eocd)
+		open(tmpfile + "_eocd", 'wb').write(eocd)
 		print(cd_size)
 		sys.exit(0)
 
 	# fetch CD, append EOCD, and open as zipfile!
 	cd = io.fetch(file, cd_start, cd_size, "central directory (CD)")
 	zipdata = cd + eocd
-	open(tmpfile, "w").write(zipdata)
+	open(tmpfile, 'wb').write(zipdata)
 
 	eprint("Opening %d CD and %d EOCD as zipfile" % (len(cd), len(eocd)))
 	zip = zipfile.ZipFile(io.BytesIO(zipdata))
@@ -98,20 +120,21 @@ for zi in zip.filelist:
 		# in our "mock" zipfile, `header_offset`s are negative (probably because the leading content is missing)
 		# so we have to add to it the CD start offset (`cd_start`) to get the actual offset
 
-		"""
+		# extra_len is usually zero but no guarantee; so we fetch header to be safe
 		file_head = io.fetch(file, cd_start + zi.header_offset + 26, 4, "%s file header" % extractee)
-		name_len = ord(file_head[0]) + (ord(file_head[1]) << 8)
-		extra_len = ord(file_head[2]) + (ord(file_head[3]) << 8)
+		name_len = parse_short(file_head[0:2])
+		extra_len = parse_short(file_head[2:4])
 		"""
 		name_len = len(zi.filename)
 		extra_len = 0 if zi.file_size == 0 else 20
+		"""
 		dl_len = zi.compress_size if args.extract_length is None else args.extract_length
 
 		content = io.fetch(file, cd_start + zi.header_offset + 30 + name_len + extra_len, dl_len, "%s file content" % extractee)
 		eprint("")
 
 		if zi.compress_type == zipfile.ZIP_DEFLATED:
-			print(zlib.decompressobj(-15).decompress(content))
+			dump(zlib.decompressobj(-zlib.MAX_WBITS).decompress(content))
 		else:
-			print(content)
+			dump(content)
 		break

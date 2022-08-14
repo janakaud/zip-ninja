@@ -54,7 +54,7 @@ def send_req(method_fn, output_fn, url, headers={}):
 
 	if res.status_code not in [200, 206]:
 		pause(res, "Unexpected response code %d!" % res.status_code)
-	if res.headers.get("Accept-Ranges") != "bytes":
+	if res.headers.get("Content-Range") is None and res.headers.get("Accept-Ranges") != "bytes":
 		pause(res, "Server doesn't seem to support ranged GETs!")
 	return output_fn(res)
 
@@ -62,7 +62,7 @@ def pause(res, msg):
 	io.eprint('HTTP code %d, headers\n%s\n' % (res.status_code, header_print(res.headers)))
 	io.eprint(msg)
 	io.eprint("Ctrl+C if you wish to stop, any other key to continue...")
-	raw_input()
+	io.waitkey()
 
 
 if __name__ == "__main__":
