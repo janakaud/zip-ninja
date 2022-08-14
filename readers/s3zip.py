@@ -37,6 +37,8 @@ def init(bucket, key):
 		_bucket = boto.connect_s3(calling_format=OrdinaryCallingFormat()).get_bucket(bucket)
 	if not _key:
 		_key = _bucket.get_key(key)
+		if not _key:
+			raise ValueError("Key not found: " + key)
 
 
 io.head = head

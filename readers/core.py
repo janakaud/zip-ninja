@@ -57,7 +57,7 @@ try:
 		print(parse_int(cache.read(4)))
 		sys.exit(0)
 
-except IOError:
+except (IOError, zipfile.BadZipFile):
 	# fetch total size, and fetch the last 22 bytes (end-of-central-directory record)
 	# if head results in a redirect, we'll get back a new file (URL/path) as well
 	(file, size) = io.head(file, headers) if conlen is None else long(conlen)
