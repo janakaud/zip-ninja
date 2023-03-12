@@ -141,7 +141,7 @@ else:
 	#TODO refactor core, make reusable without args
 	io.head = head
 	io.fetch = fetch
-	sys.argv = ['', file]   # list mode
+	sys.argv = ['', file, '--quiet']   # list mode
 	from core import zip, cd_start
 
 # load old IDEA zip if specified

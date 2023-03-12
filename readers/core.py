@@ -46,6 +46,7 @@ parser.add_argument('--print-central-directory-size', '-pcds', action='store_tru
 	help='just print size of Central Directory (CD) and exit')
 parser.add_argument('--fresh', '-r', action='store_true',
 	help='fetch freshly from remote; overwrite locally cached (meta)data')
+parser.add_argument('--quiet', '-q', action='store_true', help='do not print file list')
 parser.add_argument('--headers', '-H', nargs='*', metavar='<headers>', type=str, default=[],
 	help='extra headers ("key: value") to include in requests; authorization, cookies, etc')
 args = parser.parse_args()
@@ -109,7 +110,7 @@ except (IOError, zipfile.BadZipFile):
 
 eprint("")
 for zi in zip.filelist:
-	if not extractee:
+	if not extractee and not args.quiet:
 		print("%19s %8d %8d %s %s" % (("%4d-%2d-%2d %2d:%2d:%2d" % zi.date_time), zi.compress_size, zi.file_size, zi.filename, zi.comment))
 
 	elif zi.filename == extractee:
