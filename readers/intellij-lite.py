@@ -181,7 +181,7 @@ def download(zi):
 	# NOTE: end values have 1 extra byte
 	# ideally we should get name_len/extra_len from the file header inside zip body; we compute them here to avoid extra RTT
 	name_len = len(zi.filename)
-	extra_len = 0 if zi.file_size == 0 else 20
+	extra_len = 0
 
 	start = cd_start + zi.header_offset
 	data_start = start + 30 + name_len + extra_len
