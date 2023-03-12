@@ -29,7 +29,9 @@ from httpzip import *
 
 # parses 4 little-endian bits into their corresponding integer value
 def parse_int(bytes):
-	return ord(bytes[0]) + (ord(bytes[1]) << 8) + (ord(bytes[2]) << 16) + (ord(bytes[3]) << 24)
+	return parse_short(bytes[0:2]) + (parse_short(bytes[2:4]) << 16)
+def parse_short(bytes):
+	return ord(bytes[0:1]) + (ord(bytes[1:2]) << 8)
 
 def eprint(line):
 	sys.stderr.write(line)
@@ -237,7 +239,7 @@ for seg in chunks:
 		blob = data[entry[1] : (entry[1] + zi.compress_size - 1)]
 
 		if zi.compress_type == zipfile.ZIP_DEFLATED:
-			blob = zlib.decompressobj(-15).decompress(blob)
+			blob = zlib.decompressobj(-zlib.MAX_WBITS).decompress(blob)
 		# decompression sometimes produces smaller files; extend them
 		lendiff = zi.file_size - len(blob)
 		if lendiff < 0: # larger than expected
