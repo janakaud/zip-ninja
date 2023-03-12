@@ -3,7 +3,7 @@
 Downloads https://intellij-support.jetbrains.com/hc/en-us/community/posts/206260419-intellij-lite[a "minimal" or "lite" copy]
 of https://www.jetbrains.com/idea/[IntelliJ IDEA] CE (Community Edition)
 
-Requires Python 2.x, just like `httpzip.py`
+Find latest version from (usu. bottom of) http://d2s4y8xcwt8bet.cloudfront.net/com/jetbrains/intellij/idea/ideaIC/maven-metadata.xml
 
 Resulting bundle is suitable for generic Java devs:
 

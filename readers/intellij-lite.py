@@ -51,7 +51,7 @@ def ls(kind, zipinfos):
 # load a list of filenames from a file, skipping commented ("#...") lines
 def loadlist(fname):
 	valid = filter(lambda r: len(r) > 1 and not (r.startswith("#")), open(fname).readlines())
-	return map(lambda n: n.replace("\n", ""), valid)
+	return list(map(lambda n: n.replace("\n", ""), valid))
 
 
 # should we include a given zip filepath in final output?
