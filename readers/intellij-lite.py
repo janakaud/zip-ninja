@@ -72,7 +72,7 @@ def accept(name):
 # is this file already available in final output?
 def is_extracted(zi):
 	local = "%s/%s" % (outdir, zi.filename)
-	return isfile(local) and zi.CRC == (zlib.crc32(open(local).read()) & 0xFFFFFFFF)
+	return isfile(local) and zi.CRC == (zlib.crc32(open(local, "rb").read()) & 0xFFFFFFFF)
 
 
 # process all entries in zip; check each against old zipfile and outdir content and invoke suitable action callback
@@ -129,7 +129,7 @@ blacklist = loadlist("../data/intellij/blacklist.txt")
 # fetch/load zipfile CD/metadata
 if isfile(cd_file):
 	eprint("Loading cached copy %s" % cd_file)
-	cache = open(cd_file, "r")
+	cache = open(cd_file, "rb")
 	zip = zipfile.ZipFile(cache)
 	cache.seek(-6, 2)
 	cd_start_bytes = cache.read(4)
@@ -145,7 +145,7 @@ else:
 # load old IDEA zip if specified
 if (local):
 	eprint("Loading local/old file %s" % local)
-	old = zipfile.ZipFile(open(local, "r"))
+	old = zipfile.ZipFile(open(local, "rb"))
 else:
 	old = zipfile.ZipFile("%s/DELETE--dummy.zip" % outdir, "w") # empty
 
@@ -225,10 +225,10 @@ for seg in chunks:
 	# cache DL data for reuse/reruns
 	cached = "%s/%s-%s" % (tmpdir, seg[0], seg[1])
 	if isfile(cached):
-		data = open(cached, "r").read()
+		data = open(cached, "rb").read()
 	else:
-		data = fetch(file, seg[0], size, str(map(lambda entry: entry[0].filename, seg[2])))
-		with open(cached, "w") as datafile:
+		data = fetch(file, seg[0], size, str(list(map(lambda entry: entry[0].filename, seg[2]))))
+		with open(cached, "wb") as datafile:
 			datafile.write(data)
 
 	# extract each file included in this chunk
@@ -250,7 +250,7 @@ for seg in chunks:
 		parent = dirname(path)
 		if not isdir(parent):
 			os.makedirs(parent)
-		with open(path, "w") as outfile:
+		with open(path, "wb") as outfile:
 			outfile.write(blob)
 
 # create a dummy 'tips' JAR; we skipped original as it's big and useless, but its inner XML is mandatory for IDE launch
