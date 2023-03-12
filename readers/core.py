@@ -82,7 +82,7 @@ try:
 except (IOError, zipfile.BadZipFile):
 	# fetch total size, and fetch the last 22 bytes (end-of-central-directory record)
 	# if head results in a redirect, we'll get back a new file (URL/path) as well
-	(file, size) = io.head(file, headers) if conlen is None else long(conlen)
+	(file, size) = io.head(file, headers) if conlen is None else (file, int(conlen))
 	eocd = io.fetch(file, size - 22, 22, "end of central directory (EOCD)", headers)
 
 	"""
