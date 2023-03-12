@@ -34,7 +34,7 @@ def dump(data):
 		sys.stdout.write(data)
 
 def flatname(name):
-	return name.replace('/', '_').replace(':', '_').replace('?', '_')
+	return name[:127].replace('/', '_').replace(':', '_').replace('?', '_').replace('&', '_').replace('%', '_').replace('=', '_')
 
 
 parser = argparse.ArgumentParser(description='List/extract contents of a remote zipfile without full download')
