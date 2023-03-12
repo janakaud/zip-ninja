@@ -3,7 +3,7 @@ lib/bouncy-castle-provider
 lib/dexlib2.jar
 
 lib/grazie-
-lib/groovy-
+lib/groovy
 lib/grpc-
 
 lib/kotlin-gradle-plugin-model-
@@ -33,8 +33,14 @@ bin/linux/
 bin/mac/
 # terminal, process termination etc (uncomment natives for your platform; here I allowed mine, ..native/win/)
 # lib/pty4j
-lib/pty4j-native/linux/
-lib/pty4j-native/darwin/
+lib/pty4j/linux
+lib/pty4j/darwin
+lib/native/linux
+lib/native/mac
+lib/jna/amd64/libjni
+lib/jna/aarch64
+bin/libmac
+bin/libdbm.so
 bin/libnst64.dylib
 bin/restarter
 
